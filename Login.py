@@ -3,6 +3,7 @@
 
 # CREATE USER 'Admin'@'%' IDENTIFIED BY '1234';
 # GRANT ALL PRIVILEGES ON *.* TO Admin;
+# GRANT GRANT OPTION ON *.* TO Admin;
 # CREATE USER 'Staff1'@'%' IDENTIFIED BY '1234';
 
 
@@ -24,9 +25,11 @@ def login(usernm,passwd):
                                      db ="tollboothmanagementsystem")
           cursor = db.cursor()
      str1='select current_user()'
-     if("Admin@%" in cursor.fetchone()):
+     cursor.execute(str1)
+     res=cursor.fetchone()
+     if("Admin@%" in res):
           print("Hello Admin!")
-     elif any("Staff" in cursor.fetchone()):
+     elif any("Staff" in s for s in res):
           print("Hello Staff")
      else:
           print("Hello user")
