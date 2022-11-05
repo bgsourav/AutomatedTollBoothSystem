@@ -19,7 +19,7 @@ import tkinter
 
 def login(usernm,passwd):
      flag=0
-     if (usernm!="root" and passwd):
+     if (usernm!="root" and len(usernm)>3 and passwd):
           db = mysql.connector.connect(host ="localhost",
                                      user = usernm,
                                      password = passwd,
@@ -38,7 +38,7 @@ def login(usernm,passwd):
                print("Hello Staff")
           else:
                print("Hello user")
-     return db
+          return db
 
 
 print("Welcome to ATM\n")
