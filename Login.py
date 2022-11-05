@@ -18,21 +18,27 @@ import tkinter
 # mycursor = mydb.cursor()
 
 def login(usernm,passwd):
+     flag=0
      if (usernm!="root" and passwd):
           db = mysql.connector.connect(host ="localhost",
                                      user = usernm,
                                      password = passwd,
                                      db ="tollboothmanagementsystem")
           cursor = db.cursor()
-     str1='select current_user()'
-     cursor.execute(str1)
-     res=cursor.fetchone()
-     if("Admin@%" in res):
-          print("Hello Admin!")
-     elif any("Staff" in s for s in res):
-          print("Hello Staff")
+          flag=1
      else:
-          print("Hello user")
+        print("Login failed!")
+     if(flag):
+          str1='select current_user()'
+          cursor.execute(str1)
+          res=cursor.fetchone()
+          if("Admin@%" in res):
+               print("Hello Admin!")
+          elif any("Staff" in s for s in res):
+               print("Hello Staff")
+          else:
+               print("Hello user")
+
 
 
 print("Welcome to ATM\n")
