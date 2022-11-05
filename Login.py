@@ -38,7 +38,7 @@ def login(usernm,passwd):
                print("Hello Staff")
           else:
                print("Hello user")
-
+     return db
 
 
 print("Welcome to ATM\n")
