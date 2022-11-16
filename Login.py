@@ -8,26 +8,26 @@
 
 
 import mysql.connector
-import tkinter
 
-# mydb=mysql.connector.connect(
-#      host = "localhost",
-#      user = "root",
-#      database = "tollboothmanagementsystem"
-# )
-# mycursor = mydb.cursor()
 
-def login(usernm,passwd):
+def login():
+     usernm=input("Enter username (Minimum length is 4): ")
+     passwd=input("Enter password: ")
      flag=0
-     if (usernm!="root" and len(usernm)>3 and passwd):
-          db = mysql.connector.connect(host ="localhost",
-                                     user = usernm,
-                                     password = passwd,
-                                     db ="tollboothmanagementsystem")
-          cursor = db.cursor()
-          flag=1
-     else:
-        print("Login failed!")
+     try:
+          if (usernm!="root" and len(usernm)>3 and passwd):
+               db = mysql.connector.connect(host ="localhost",
+                                        user = usernm,
+                                        password = passwd,
+                                        db ="tollboothmanagementsystem")
+               cursor = db.cursor()
+               flag=1
+          else:
+               print("\nEither USERNAME does not exists or invalid PASSWORD Login failed!\n")
+     except mysql.connector.Error as e:
+          print(e)
+          print("\nCredentials do not match\n")
+          return
      if(flag):
           str1='select current_user()'
           cursor.execute(str1)
@@ -37,15 +37,18 @@ def login(usernm,passwd):
           elif any("Staff" in s for s in res):
                print("Hello Staff")
           else:
-               print("Hello user")
+               print("Hello customer")
           return db
 
 
-print("Welcome to ATM\n")
-ch=input("Do you want to login? \n")
-if(ch=='y'):
-     usrname=input("Enter name: ")
-     passwd=input("Enter password: ")
-     login(usrname,passwd)
-
-     
+print("\nWelcome to ATM\n")
+print("<Fare details here..>")
+ch=input("Do you want to login? [Y/N]\n")
+while(ch in ['y','Y']):
+     db= login()
+     if(db):
+          break;
+     else:
+          ch=input("Would you like to try again? [Y/N]\n")
+if (ch in ['N','n']) :
+     print("Ok. Thank You!")
