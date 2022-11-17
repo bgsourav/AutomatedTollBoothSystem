@@ -1,21 +1,3 @@
-#commands to be typed in mysql/bin before running this program
-# initially login as root and then type these commands
-
-# CREATE USER 'Admin'@'%' IDENTIFIED BY '1234';
-# GRANT ALL PRIVILEGES ON *.* TO Admin;
-# GRANT GRANT OPTION ON *.* TO Admin;
-# CREATE USER 'Staff1'@'%' IDENTIFIED BY '1234';
-
-
-#commands to be typed in mysql/bin before running this program
-# initially login as root and then type these commands
-
-# CREATE USER 'Admin'@'%' IDENTIFIED BY '1234';
-# GRANT ALL PRIVILEGES ON *.* TO Admin;
-# GRANT GRANT OPTION ON *.* TO Admin;
-# CREATE USER 'Staff1'@'%' IDENTIFIED BY '1234';
-
-
 import mysql.connector
 
 
