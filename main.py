@@ -1,4 +1,4 @@
-from features import *
+from features import *  # features is a name of the file where other functions are written
 
 print("\nWelcome to ATM\n")
 print("<Fare details here..>")
