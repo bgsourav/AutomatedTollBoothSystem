@@ -1,5 +1,9 @@
--- this is used for creation of a user
-create USER 'me' IDENTIFIED BY '1234';
+CREATE USER 'ADMIN01' IDENTIFIED BY 'ADMIN1';
+CREATE USER 'ADMIN02' IDENTIFIED BY 'ADMIN2';
+
+GRANT ALL PRIVILEGES ON *.* TO ADMIN01;
+GRANT ALL PRIVILEGES ON *.* TO ADMIN02;
+
 
 -- Create a database for the project
 create database TollBoothManagementSystem;
