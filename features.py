@@ -1,12 +1,12 @@
 
 import mysql.connector
 
-global global_usercount
-global_usercount=3
+from bullet import Password
 
 def login():
     usernm = input("Enter username (Minimum length is 4): ")
-    passwd = input("Enter password: ")
+    cli = Password(prompt = "Enter password: ",hidden="*")
+    passwd = cli.launch()
     flag = 0
     try:
         if (usernm != "root" and len(usernm) > 3 and passwd):  # must not login as root
@@ -33,9 +33,10 @@ def login():
             print("\nLogged in as Staff..")
         return db
 
-def create_staff(db,cursor):
+def create_staff(db,cursor,global_usercount):
     staff_name = input("Please enter the name of the Staff:")
-    staff_password = input("Enter the associated password for {}".format(staff_name))
+    cli = Password(prompt = "Enter the associated password for {} - >".format(staff_name),hidden="*")
+    staff_password = cli.launch()
     try:
         cursor.execute(f"create user '{staff_name}'@'localhost' identified by '{staff_password}';")
     except:
@@ -43,7 +44,7 @@ def create_staff(db,cursor):
         print("Error has occurred!")
         print("Please try again...")
         #sending control flow back for reexecution so that the process continues
-        create_staff(db,cursor)
+        create_staff(db,cursor,global_usercount)
         return
     #No error during execution
     #Send in a global count to let me know how many users are there
@@ -51,7 +52,7 @@ def create_staff(db,cursor):
     #tables for which staff need access
     tables_for_staff = ["Transaction_Details","Access","Uses","Vehicle_Details","Account_Details"]
     for i in tables_for_staff:
-        cursor.execute(f"grant create on TollBoothManagementSystem.{i} to user {staff_name};")
+        cursor.execute(f"grant create on TollBoothManagementSystem.{i} to '{staff_name}'@'localhost';")
     #inserting the new staff to the Toll_Booth table
     cursor.execute(f"insert into Toll_Booth values ({global_usercount},'{staff_name}',0)")
     cursor.execute(f"grant update on TollBoothManagementSystem.Toll_Booth to user{staff_name};")
