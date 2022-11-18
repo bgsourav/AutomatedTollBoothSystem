@@ -1,9 +1,10 @@
-CREATE USER 'ADMIN01' IDENTIFIED BY 'ADMIN1';
-CREATE USER 'ADMIN02' IDENTIFIED BY 'ADMIN2';
+CREATE USER 'ADMIN01'@'localhost' IDENTIFIED BY 'ADMIN1';
+CREATE USER 'ADMIN02'@'localhost' IDENTIFIED BY 'ADMIN2';
 
-GRANT ALL PRIVILEGES ON *.* TO ADMIN01;
-GRANT ALL PRIVILEGES ON *.* TO ADMIN02;
-
+GRANT ALL PRIVILEGES ON *.* TO 'ADMIN01'@'localhost';
+GRANT ALL PRIVILEGES ON *.* TO 'ADMIN02'@'localhost';
+GRANT GRANT OPTION ON tollboothmanagementsystem.* TO 'ADMIN01'@'localhost';
+GRANT GRANT OPTION ON tollboothmanagementsystem.* TO 'ADMIN02'@'localhost';
 
 -- Create a database for the project
 create database TollBoothManagementSystem;
