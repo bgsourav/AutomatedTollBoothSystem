@@ -91,11 +91,11 @@ def low_balance(db, mycursor, faree, balanc, reg_no):
     print("Please recharge now.")
     recharg = 0
     recharg = int(
-        input(f"Enter the recharge amount (Minimum amount : {faree}). "))
-    while (recharg < faree):
+        input(f"Enter the recharge amount (Minimum amount : {faree-balanc}). "))
+    while (recharg < (faree-balanc)):
         print("Please enter minimum amount")
         recharg = int(
-            input(f"Enter the recharge amount (Minimum amount : {faree}). "))
+            input(f"Enter the recharge amount (Minimum amount : {faree-balanc}). "))
     balanc += recharg-faree
     update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}'"
     mycursor.execute(update_balanc)  # update the balance
