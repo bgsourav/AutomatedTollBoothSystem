@@ -6,6 +6,11 @@ GRANT ALL PRIVILEGES ON *.* TO 'ADMIN02'@'localhost';
 GRANT GRANT OPTION ON tollboothmanagementsystem.* TO 'ADMIN01'@'localhost';
 GRANT GRANT OPTION ON tollboothmanagementsystem.* TO 'ADMIN02'@'localhost';
 
+create user 'Staff01'@'localhost' identified by 'Staff1';
+create user 'Staff02'@'localhost' identified by 'Staff2';
+-- grant PRIVILEGES to be given to staff
+
+
 -- Create a database for the project
 create database TollBoothManagementSystem;
 
