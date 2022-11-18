@@ -1,4 +1,4 @@
-from features import *  # features is a name of the file where other functions are written
+from features import *
 
 print("\nWelcome to ATM\n")
 print("<Fare details here..>")
@@ -7,8 +7,9 @@ while(ch in ['y','Y']):
      db= login()
      while(db ):
           cursor=db.cursor()
-          car_entered(db,cursor)
-
+          # car_entered(db,cursor)
+          print("Adding staff")
+          create_staff(db,cursor)
           ch1=input("Would you like to logout?[Y/N] ")
           if(ch1 in ['y','Y']):
                ch='n'
