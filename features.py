@@ -1,6 +1,8 @@
 
 import mysql.connector
 
+global global_usercount
+global_usercount=3
 
 def login():
     usernm = input("Enter username (Minimum length is 4): ")
@@ -24,11 +26,35 @@ def login():
         str1 = 'select current_user()'  # gives the name of the loged in account
         cursor.execute(str1)
         res = cursor.fetchone()
+     #    if ("ADMIN01@localhost" in res or "ADMIN02@localhost" in res):
         if ("ADMIN01@%" in res or "ADMIN02@%" in res):
             print("\nLogged in as Admin..")
         else:
             print("\nLogged in as Staff..")
         return db
+
+def create_staff(db,cursor):
+    staff_name = input("Please enter the name of the Staff:")
+    staff_password = input("Enter the associated password for {}".format(staff_name))
+    try:
+        cursor.execute(f"create user '{staff_name}'@'localhost' identified by '{staff_password}';")
+    except:
+        #Error has occurred
+        print("Error has occurred!")
+        print("Please try again...")
+        #sending control flow back for reexecution so that the process continues
+        create_staff(db,cursor)
+        return
+    #No error during execution
+    #Send in a global count to let me know how many users are there
+    global_usercount = global_usercount + 1
+    #tables for which staff need access
+    tables_for_staff = ["Transaction_Details","Access","Uses","Vehicle_Details","Account_Details"]
+    for i in tables_for_staff:
+        cursor.execute(f"grant create on TollBoothManagementSystem.{i} to user {staff_name};")
+    #inserting the new staff to the Toll_Booth table
+    cursor.execute(f"insert into Toll_Booth values ({global_usercount},'{staff_name}',0)")
+    cursor.execute(f"grant update on TollBoothManagementSystem.Toll_Booth to user{staff_name};")
 
 
 def car_entered(db, mycursor):
@@ -66,7 +92,7 @@ def car_present(db, mycursor, reg_no):
     mycursor.execute(faree)  # get toll price
     faree = mycursor.fetchone()[0]
     print("Amount to be deducted : ", faree)
-    print(check_flg)
+#     print(check_flg)
     if (check_flg == 0):  # balance is less than fare
         recharg, balanc = low_balance(db, mycursor, faree, balanc, reg_no)
 
@@ -100,6 +126,8 @@ def low_balance(db, mycursor, faree, balanc, reg_no):
     balanc += recharg-faree
     update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}'"
     mycursor.execute(update_balanc)  # update the balance
+#     randm=
+#     add_transac = f
     db.commit()
     print("Recharge successful..")
     print("Tax deducted sucessfully..\n Balance amount has been updated")
@@ -140,7 +168,6 @@ def update_chkbit(db,mycursor,balanc,faree,reg_no):
         mycursor.execute(update_checkbit)
         db.commit()
         print("Check bit updated.")
-
 
 
 # def car_enter(db):
