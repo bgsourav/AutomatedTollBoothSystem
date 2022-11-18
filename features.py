@@ -1,8 +1,6 @@
 
 import mysql.connector
-
 from bullet import Password
-
 def login():
     usernm = input("Enter username (Minimum length is 4): ")
     cli = Password(prompt = "Enter password: ",hidden="*")
