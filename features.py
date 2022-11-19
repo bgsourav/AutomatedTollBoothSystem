@@ -24,8 +24,10 @@ def login():
         str1 = 'select current_user()'  # gives the name of the loged in account
         cursor.execute(str1)
         res = cursor.fetchone()
-     #    if ("ADMIN01@localhost" in res or "ADMIN02@localhost" in res):
-        if ("ADMIN01@%" in res or "ADMIN02@%" in res):
+        logn=f"Select distinct user_type from user where user_name like 'ADMIN%'"
+        cursor.execute(logn)
+        logn=cursor.fetchone()[0]
+        if(logn==1):
             print("\nLogged in as Admin..")
         else:
             print("\nLogged in as Staff..")
