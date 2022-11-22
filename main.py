@@ -19,8 +19,8 @@ ch=input("Do you want to login? [Y/N]\n")
 while(ch in ['y','Y']):
      db= login()
      while(db ):
-          cursor=db.cursor()
-          # car_entered(db,cursor)
+          cursor =db.cursor(buffered=True)
+          car_entered(db,cursor)
           print("Adding staff")
           create_staff(db,cursor,global_usercount)
           ch1=input("Would you like to logout?[Y/N] ")
