@@ -76,7 +76,7 @@ def transac_id(db,mycursor,acc_no,phone_no,reg_no):
             flag=0
     ins3 = f"INSERT INTO Transaction_Details values ('{trid}',{acc_no},{phone_no},'{reg_no}')"
     mycursor.execute(ins3)            
-    db.commit()
+    #db.commit()
 
     
     
@@ -116,14 +116,24 @@ def car_present(db, mycursor, reg_no):
     faree = mycursor.fetchone()[0]
     acc_no=f"Select Account_Number,Phone_Number from Transaction_Details where Registration_Number='{reg_no}'"
     mycursor.execute(acc_no)  # get account number
-    acc_no,phone_no=mycursor.fetchone()
+    arr1=mycursor.fetchall()
+    acc_no=[i[0] for i in arr1]
+    phonm=[i[1] for i in arr1]
+    print("Phone number available to recharge: \n")
+    print("Choice\t Phone number")
+    for i in range(len(acc_no)):
+        print(f" {i+1}> \t{phonm[i]}. \n")
+    numb=int(input("Enter your choice ?  "))
+    while (numb> len(phonm) or numb<1):
+        numb=int(input("Please Enter a valid choice: "))
+    print("Phone number chosen: ",phonm[numb])
     print("Amount to be deducted : ", faree)
 #     print(check_flg)
     if (check_flg == 0):  # balance is less than fare
-        recharg, balanc = low_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no)
+        recharg, balanc = low_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
 
     else:  # customer has enough balance
-        recharg, balanc = enough_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no)
+        recharg, balanc = enough_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
 
     update_chkbit(db,mycursor,balanc,faree,reg_no)
     
@@ -149,7 +159,7 @@ def low_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
         recharg = int(
             input(f"Enter the recharge amount (Minimum amount : {faree-balanc}). "))
     balanc += recharg-faree
-    # transac_id(db,mycursor,acc_no,phone_no,reg_no)
+    transac_id(db,mycursor,acc_no,phone_no,reg_no)
     update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}'"
     mycursor.execute(update_balanc)  # update the balance
     db.commit()
@@ -166,7 +176,7 @@ def enough_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
     db.commit()
     print("Tax deducted successfully..")
     print("Remaining balance : ", balanc)
-    # transac_id(db,mycursor,acc_no,phone_no,reg_no)
+    transac_id(db,mycursor,acc_no,phone_no,reg_no)
     ch = input("Would you like to recharge now? [Y/N]")
     recharg = 0
 
@@ -180,7 +190,7 @@ def enough_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
         mycursor.execute(new_balance)  # update the balance
         print("Recharge successful..")
         print("New balance : ", balanc)
-        # transac_id(db,mycursor,acc_no,phone_no,reg_no)
+        transac_id(db,mycursor,acc_no,phone_no,reg_no)
         db.commit()
     return [recharg, balanc]
 
