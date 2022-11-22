@@ -61,7 +61,6 @@ def create_staff(db,cursor,global_usercount):
 def transac_id(db,mycursor,acc_no,phone_no,reg_no):
     print("sdfdf",acc_no,phone_no,reg_no)
     flag=1
-    mycursor = db.mycursor(buffered=True)
     while(flag):
         trid = input("Enter the Transaction Id [format TRXXXXXX]: ")
         str1="Select Transaction_ID from Transaction_Details"
@@ -126,6 +125,7 @@ def car_present(db, mycursor, reg_no):
     numb=int(input("Enter your choice ?  "))
     while (numb> len(phonm) or numb<1):
         numb=int(input("Please Enter a valid choice: "))
+    numb-=1
     print("Phone number chosen: ",phonm[numb])
     print("Amount to be deducted : ", faree)
 #     print(check_flg)
