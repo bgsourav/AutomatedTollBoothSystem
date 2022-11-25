@@ -88,7 +88,7 @@ def car_entered(db, mycursor):
         print("Vehicle is present in database")
         car_present(db, mycursor, reg_no)
     # else:        #if car is not present in database
-        # print("Car is present in database")
+        # print("Vehicle is not present in database.\nPlease register.")
     #      car_notpresent(db,mycursor,reg_no)
 
 
