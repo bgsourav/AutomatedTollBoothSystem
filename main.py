@@ -21,7 +21,8 @@ while True:
      ch=input(blueBright("Do you want to login? [Y/N]\n")) #Simple_chalk functions can be nested with '.' and are callable like a function
      while(ch in ['y','Y']):
           is_admin = 0
-          db= login(is_admin)
+          db,is_admin= login()
+          # print(db)
           while(db):
                cursor = db.cursor(buffered = True)
                if is_admin == 1:
@@ -42,7 +43,7 @@ while True:
                #'op_x' refers to the operation of which the answer is of
                #the inquirer prompt returns a Dicitonary which is of the form
                #{'op_x':Choice}
-               if(answer['op_x'] in ['1.)Enter Car Details','2.)Enter Car Details']):
+               if(answer in ['1.)Enter Car Details','2.)Enter Car Details']):
                    car_entered(db,cursor)
                if("Create New User" in answer):
                     create_staff(db,cursor,global_usercount)

@@ -2,7 +2,7 @@
 import mysql.connector
 from bullet import Password
 from simple_chalk import chalk,green,red,yellowBright,redBright,greenBright
-def login(is_admin):
+def login():
     usernm = input("Enter username (Minimum length is 4): ")
     cli = Password(prompt = "Enter password: ",hidden="*")
     passwd = cli.launch()
@@ -20,7 +20,7 @@ def login(is_admin):
     except mysql.connector.Error as e:
         print(redBright.bold.underline("Error occured: {}\n".format(e)))
         print(redBright.bold.underline("\nCredentials do not match\n"))
-        return
+        return None,0
     if (flag):
         str1 = 'select current_user()'  # gives the name of the loged in account
         cursor.execute(str1)
@@ -28,12 +28,15 @@ def login(is_admin):
         logn=f"Select distinct user_type from user where user_name like 'ADMIN%'"
         cursor.execute(logn)
         logn=cursor.fetchone()[0]
+        if "ADMIN" in usernm:
+            logn = 1
+        else:
+            logn =0
         if(logn==1):
             print(greenBright.bold.underline("\nLogged in as Admin..\n"))
         else:
             print(greenBright.bold.underline("\nLogged in as Staff..\n"))
-        is_admin = logn
-        return db
+        return db,logn
 
 def create_staff(db,cursor,global_usercount):
     staff_name = input("Please enter the name of the Staff:")
@@ -52,7 +55,7 @@ def create_staff(db,cursor,global_usercount):
     #No error during execution
     #Send in a global count to let me know how many users are there
     cursor.execute(f"select COUNT(*) from Toll_Booth;")
-    tempo = cursor.fetchall()
+    tempo = cursor.fetchone()[0]
     print(tempo)
     global_usercount = global_usercount + 1
     #tables for which staff need access
