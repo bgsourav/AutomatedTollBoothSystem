@@ -59,7 +59,7 @@ def create_staff(db,cursor,global_usercount):
 
 
 def transac_id(db,mycursor,acc_no,phone_no,reg_no):
-    print("sdfdf",acc_no,phone_no,reg_no)
+    #print("sdfdf",acc_no,phone_no,reg_no)
     flag=1
     while(flag):
         trid = input("Enter the Transaction Id [format TRXXXXXX]: ")
