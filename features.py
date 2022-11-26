@@ -205,26 +205,67 @@ def update_chkbit(db,mycursor,balanc,faree,reg_no):
         db.commit()
         print("Check bit updated.")
 
-# def car_enter(db):
-#      #enter car details
-    #  ask for tolbooth numbr
-#      check for it in car details table
-#      if present:
-#           check bit:
-#                deduct balance
-#           else if:
-#                set check bit to 0
-#                give Warning
-#                ask for payemnt
-#           else:
-#                leave without tax for govt vehicles
-#           update transac details
-#           update toll booth revenue
-#           if balance_new > fare:
-#                update check bit
-#      else:
-#           insert into car details table
-#           ask payment
-#           insert into transac
-#           if balance_new > fare:
-#                update check bit
+def car_notpresent(db, mycursor, reg_no):
+    print("Enter the Check flag i.e. the designation of the Vehicle: \n")
+    cf = int(input("Type \n 2 - Government Vehicle \n 1 - Not a Government Vehicle :- \n")) 
+    #print("Check flag = ",cf,"\n")
+    print("Enter the type of the Vehicle: \n")
+    while(1):
+        vt = input("Type \n 4 - Four Axle Truck \n 3 - Three Axle Truck \n 2 - Two Axle Truck \n 1 - Short Vehicle :- \n")
+        if vt == '4':
+            Vehicle_Type = "Four_axle_truck"
+            fare = 150
+            break
+        elif vt == '3':
+            Vehicle_Type = "Three_axle_truck"
+            fare = 100
+            break
+        elif vt == '2':
+            Vehicle_Type = "Two_axle_truck"
+            fare = 75
+            break
+        elif vt == '1':
+            Vehicle_Type = "Short_vehicle"
+            fare = 50
+            break
+        else:
+            print("\nPlease Enter the correct option..\n")
+    print("You have chosen Vehicle Type as - " + Vehicle_Type)
+    try:
+        ins1 = f"INSERT INTO Vehicle_Details values (%s, %s, %s);"
+        st1 = (cf, Vehicle_Type, reg_no) 
+        mycursor.execute(ins1, st1)
+        db.commit()
+        if cf == 2:
+            print("\nThis is a government vehicle and is exempted from tax..\n")
+            return
+        fname = input("Enter your First Name: ")
+        lname = input("Enter your Last Name: ")
+        accno = int(input("Enter your Account Number: "))
+        bal = 0
+        while(cf == 1):
+            bal = int(input("Enter the Balance in your account: "))
+            if bal < fare:
+                cf = 0
+                print("\nNot sufficient balance!!\n")
+            else:
+                #bal = bal - fare
+                #cf = 1
+                break
+        ins2 = f"INSERT INTO Account_Details values (%s, %s, %s, %s);"
+        st2 = (accno, fname, lname, bal)
+        mycursor.execute(ins2, st2)
+        db.commit()
+        trid = input("Enter the Transaction Id: ")
+        phno = int(input("Enter your Phone Number: "))
+        ins3 = f"INSERT INTO Transaction_Details values (%s, %s, %s, %s);"
+        st3 = (trid, accno, phno, reg_no)
+        mycursor.execute(ins3, st3)
+        db.commit()
+        car_present(db, mycursor, reg_no)
+    except mysql.connector.Error as e:
+        print("\nError has Occured!!.. i.e : ",e)
+        db.rollback()
+        return
+    print("")
+    return
