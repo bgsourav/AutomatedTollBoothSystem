@@ -113,7 +113,8 @@ def car_present(db, mycursor, reg_no):
     faree = f"select Toll_Price from Fare_Table natural join Vehicle_Details where Vehicle_Details.Registration_Number='{reg_no}'"
     mycursor.execute(faree)  # get toll price
     faree = mycursor.fetchone()[0]
-    acc_no=f"Select distinct Account_Number,Phone_Number from Transaction_Details where Registration_Number='{reg_no} group by Account_Number'"
+    print("Fare : ", faree)
+    acc_no=f"Select distinct Account_Number,Phone_Number from Transaction_Details where Registration_Number='{reg_no}' group by Account_Number"
     mycursor.execute(acc_no)  # get account number and phone number
     arr1=mycursor.fetchall()
     acc_no=[i[0] for i in arr1]
@@ -121,12 +122,12 @@ def car_present(db, mycursor, reg_no):
     print("Account and Phone number available to recharge: \n")
     print("Choice\t Account number\t Phone number")
     for i in range(len(acc_no)):
-        print(f" {i+1}> \t{acc_no[i]} \t{phonm[i]}. \n")
+        print(f" {i+1}> \t {acc_no[i]} \t {phonm[i]}. \n")
     numb=int(input("Enter your choice ?  "))
     while (numb> len(phonm) or numb<1):
         numb=int(input("Please Enter a valid choice: "))
     numb-=1
-    print("Phone number chosen: ",phonm[numb])
+    print("Account number chosen: ",acc_no[numb])
     print("Amount to be deducted : ", faree)
 #     print(check_flg)
     if (check_flg == 0):  # balance is less than fare
