@@ -19,7 +19,7 @@ while True:
      ch=input("Do you want to login? [Y/N]\n")
      while(ch in ['y','Y']):
           db= login()
-          while(db ):
+          while(db):
                cursor =db.cursor(buffered=True)
                car_entered(db,cursor)
                print("Adding staff")
