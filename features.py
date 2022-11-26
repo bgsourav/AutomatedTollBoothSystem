@@ -48,6 +48,8 @@ def create_staff(db,cursor,global_usercount):
         return
     #No error during execution
     #Send in a global count to let me know how many users are there
+    cursor.execute(f"select COUNT(*) from Toll_Booth;")
+    global_usercount = cursor.fetchall()
     global_usercount = global_usercount + 1
     #tables for which staff need access
     tables_for_staff = ["Transaction_Details","Access","Uses","Vehicle_Details","Account_Details"]
