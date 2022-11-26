@@ -1,7 +1,8 @@
 
 import mysql.connector
 from bullet import Password
-def login():
+from simple_chalk import chalk,green,red,yellowBright,redBright,greenBright
+def login(is_admin):
     usernm = input("Enter username (Minimum length is 4): ")
     cli = Password(prompt = "Enter password: ",hidden="*")
     passwd = cli.launch()
@@ -15,10 +16,10 @@ def login():
             cursor = db.cursor()
             flag = 1
         else:
-            print("\nEither USERNAME does not exists or invalid PASSWORD Login failed!\n")
+            print(redBright.bold.underline("\nEither USERNAME does not exists or invalid PASSWORD.\nLogin failed!\n"))
     except mysql.connector.Error as e:
-        print("Error occured: " ,e)
-        print("\nCredentials do not match\n")
+        print(redBright.bold.underline("Error occured: {}\n".format(e)))
+        print(redBright.bold.underline("\nCredentials do not match\n"))
         return
     if (flag):
         str1 = 'select current_user()'  # gives the name of the loged in account
@@ -28,9 +29,10 @@ def login():
         cursor.execute(logn)
         logn=cursor.fetchone()[0]
         if(logn==1):
-            print("\nLogged in as Admin..")
+            print(greenBright.bold.underline("\nLogged in as Admin..\n"))
         else:
-            print("\nLogged in as Staff..")
+            print(greenBright.bold.underline("\nLogged in as Staff..\n"))
+        is_admin = logn
         return db
 
 def create_staff(db,cursor,global_usercount):
@@ -39,17 +41,19 @@ def create_staff(db,cursor,global_usercount):
     staff_password = cli.launch()
     try:
         cursor.execute(f"create user '{staff_name}'@'localhost' identified by '{staff_password}';")
-    except:
+    except mysql.connector.Error as e:
         #Error has occurred
         print("Error has occurred!")
         print("Please try again...")
+        print(e.body)
         #sending control flow back for reexecution so that the process continues
         create_staff(db,cursor,global_usercount)
         return
     #No error during execution
     #Send in a global count to let me know how many users are there
     cursor.execute(f"select COUNT(*) from Toll_Booth;")
-    global_usercount = cursor.fetchall()
+    tempo = cursor.fetchall()
+    print(tempo)
     global_usercount = global_usercount + 1
     #tables for which staff need access
     tables_for_staff = ["Transaction_Details","Access","Uses","Vehicle_Details","Account_Details"]

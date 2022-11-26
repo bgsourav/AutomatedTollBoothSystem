@@ -1,9 +1,12 @@
+from tkinter import Y
 from features import *
 from prettytable import PrettyTable
+import inquirer
+from simple_chalk import chalk,green,red,yellowBright,redBright,greenBright,blueBright,cyan
 global global_usercount
 global_usercount=3
-print("\nWelcome to ATM\n")
-print("Fare details here..")
+print(yellowBright.bold("\nWelcome to ATM\n"))
+print(cyan("Fare details here.."))
 print("")
 # Custom_table = cus_tab
 cus_tab = PrettyTable()
@@ -16,15 +19,32 @@ cus_tab.sortby = 'Toll_Price'
 print(cus_tab)
 print("")
 while True:
-     ch=input("Do you want to login? [Y/N]\n")
+     ch=input(blueBright("Do you want to login? [Y/N]\n"))
      while(ch in ['y','Y']):
-          db= login()
+          is_admin = 0
+          db= login(is_admin)
           while(db):
-               cursor =db.cursor(buffered=True)
-               car_entered(db,cursor)
-               print("Adding staff")
-               create_staff(db,cursor,global_usercount)
-               ch1=input("Would you like to logout?[Y/N] ")
+               cursor = db.cursor(buffered = True)
+               if is_admin == 1:
+                    operations = [
+                         inquirer.List('op_x',
+                         message = "Which Operation would you like to perform?",
+                         choices = ['1.)Create New User','2.)Enter Car Details','3.)Exit'],
+                         ),
+                    ]
+               elif is_admin == 0:
+                    operations = [
+                         inquirer.List('op_x',
+                         message = "Which Operation would you like to perform?",
+                         choices = ['1.)Enter Car Details','2.)Exit'],carousel = True
+                         ),
+                    ]
+               answer = inquirer.prompt(operations)['op_x']
+               if(answer['op_x'] in ['1.)Enter Car Details','2.)Enter Car Details']):
+                   car_entered(db,cursor)
+               if("Create New User" in answer):
+                    create_staff(db,cursor,global_usercount)
+               ch1=input("Are you sure you want to Log Out?[Y/N] ")
                if(ch1 in ['y','Y']):
                     ch='n'
                     break
@@ -32,5 +52,7 @@ while True:
                ch=input("Would you like to try again? [Y/N]\n")
      if (ch in ['N','n']) :
           print("Ok. Thank You!")
+          break
      else:
           print("Please enter a valid choice")
+          print("")
