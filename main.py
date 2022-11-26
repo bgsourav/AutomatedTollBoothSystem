@@ -19,7 +19,7 @@ cus_tab.sortby = 'Toll_Price'
 print(cus_tab)
 print("")
 while True:
-     ch=input(blueBright("Do you want to login? [Y/N]\n"))
+     ch=input(blueBright("Do you want to login? [Y/N]\n")) #Simple_chalk functions can be nested with '.' and are callable like a function
      while(ch in ['y','Y']):
           is_admin = 0
           db= login(is_admin)
@@ -40,6 +40,9 @@ while True:
                          ),
                     ]
                answer = inquirer.prompt(operations)['op_x']
+               #'op_x' refers to the operation of which the answer is of
+               #the inquirer prompt returns a Dicitonary which is of the form
+               #{'op_x':Choice}
                if(answer['op_x'] in ['1.)Enter Car Details','2.)Enter Car Details']):
                    car_entered(db,cursor)
                if("Create New User" in answer):
