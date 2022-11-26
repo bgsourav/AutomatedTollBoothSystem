@@ -21,7 +21,11 @@ while True:
      ch=input(blueBright("Do you want to login? [Y/N]\n")) #Simple_chalk functions can be nested with '.' and are callable like a function
      while(ch in ['y','Y']):
           is_admin = 0
-          db,is_admin= login()
+          res = login()
+          db = None
+          if(res != None):
+               db = res[0]
+               is_admin = res[1]
           # print(db)
           while(db):
                cursor = db.cursor(buffered = True)

@@ -20,7 +20,7 @@ def login():
     except mysql.connector.Error as e:
         print(redBright.bold.underline("Error occured: {}\n".format(e)))
         print(redBright.bold.underline("\nCredentials do not match\n"))
-        return None,0
+        return None,None
     if (flag):
         str1 = 'select current_user()'  # gives the name of the loged in account
         cursor.execute(str1)
