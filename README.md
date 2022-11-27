@@ -3,7 +3,7 @@
 ### For encrypting passwords at the time of input:
 Download maskpass package by running: 
 ```console
-pip install maskpass
+pip3 install maskpass
 ```
 ### To show a Table format for data:
 Download prettytable package by running:
@@ -19,7 +19,4 @@ Download Inquirer
 ```console
 pip3 install inquirer
 ```
-Download Maskpass
-```console
-pip3 install maskpass
-```
+
