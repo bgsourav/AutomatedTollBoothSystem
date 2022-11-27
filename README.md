@@ -1,6 +1,6 @@
 # AutomatedTollBoothSystem
 ## Dependencies
-### For encrypting passwords at the time of input:
+### To mask the passwords at the time of input:
 Download maskpass package by running: 
 ```console
 pip3 install maskpass
