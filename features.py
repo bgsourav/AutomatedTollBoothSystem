@@ -1,11 +1,9 @@
-
 import mysql.connector
-from bullet import Password
+import maskpass
 from simple_chalk import chalk,green,red,yellowBright,redBright,greenBright
 def login():
     usernm = input("Enter username (Minimum length is 4): ")
-    cli = Password(prompt = "Enter password: ",hidden="*")
-    passwd = cli.launch()
+    passwd= maskpass.askpass()
     flag = 0
     try:
         if (usernm != "root" and len(usernm) > 3 and passwd):  # must not login as root
@@ -20,7 +18,7 @@ def login():
     except mysql.connector.Error as e:
         print(redBright.bold.underline("Error occured: {}\n".format(e)))
         print(redBright.bold.underline("\nCredentials do not match\n"))
-        return None,None
+        return
     if (flag):
         str1 = 'select current_user()'  # gives the name of the loged in account
         cursor.execute(str1)
@@ -28,10 +26,7 @@ def login():
         logn=f"Select distinct user_type from user where user_name like 'ADMIN%'"
         cursor.execute(logn)
         logn=cursor.fetchone()[0]
-        if "ADMIN" in usernm:
-            logn = 1
-        else:
-            logn =0
+        print(res)
         if(logn==1):
             print(greenBright.bold.underline("\nLogged in as Admin..\n"))
         else:
@@ -75,7 +70,7 @@ def transac_id(db,mycursor,acc_no,phone_no,reg_no):
         str1="Select Transaction_ID from Transaction_Details"
         mycursor.execute(str1)
         str1=mycursor.fetchall()
-        print(str1)
+        # print(str1)
         att=[i[0] for i in str1]
         if(trid in att):
             print("Error occured: ")
@@ -85,8 +80,6 @@ def transac_id(db,mycursor,acc_no,phone_no,reg_no):
     ins3 = f"INSERT INTO Transaction_Details values ('{trid}',{acc_no},{phone_no},'{reg_no}')"
     mycursor.execute(ins3)            
     #db.commit()
-
-    
     
 def car_entered(db, mycursor):
     reg_no = input("Please Enter the Vehicle Registration number : ")
@@ -96,10 +89,9 @@ def car_entered(db, mycursor):
     if (res1):  # if car is present in database
         print("Vehicle is present in database")
         car_present(db, mycursor, reg_no)
-    # else:        #if car is not present in database
-        # print("Vehicle is not present in database.\nPlease register.")
-    #      car_notpresent(db,mycursor,reg_no)
-
+    else:        #if car is not present in database
+        print("Vehicle is not present in database.\nPlease register.")
+        car_notpresent(db,mycursor,reg_no)
 
 def car_present(db, mycursor, reg_no):
     check_flg = f"Select check_flag from vehicle_details where Registration_Number = '{reg_no}'"
@@ -108,17 +100,15 @@ def car_present(db, mycursor, reg_no):
     if (check_flg != 1 and check_flg != 0):
         print("This is a government vehicle and is exempted from tax..")
         return
+    mycursor.execute(f"select COUNT(*) from Toll_Booth;")
+    tempo = mycursor.fetchone()[0]
     toll_no = int(input(
-        ("Please enter the toll booth number where the vehicle entered [less than 4] ")))
-    while (toll_no > 4):
+        (f"Please enter the toll booth number where the vehicle entered [less than {tempo}] ")))
+    while (toll_no > tempo):
         print(
             "Entered Toll Booth ID does not exist\n Please enter valid Toll Booth number : ")
         toll_no = int(input(
             ("Please enter the toll booth number where the vehicle entered [less than 4] ")))
-    balanc = f"select distinct balance from Transaction_Details natural join Vehicle_Details natural join Account_Details where Vehicle_Details.Registration_Number='{reg_no}'"
-    mycursor.execute(balanc)  # get balance
-    balanc = mycursor.fetchone()[0]
-    print("Balance : ", balanc)
     faree = f"select Toll_Price from Fare_Table natural join Vehicle_Details where Vehicle_Details.Registration_Number='{reg_no}'"
     mycursor.execute(faree)  # get toll price
     faree = mycursor.fetchone()[0]
@@ -138,8 +128,11 @@ def car_present(db, mycursor, reg_no):
     numb-=1
     print("Account number chosen: ",acc_no[numb])
     print("Amount to be deducted : ", faree)
-#     print(check_flg)
-    if (check_flg == 0):  # balance is less than fare
+    balanc = f"select distinct balance from Transaction_Details natural join Vehicle_Details natural join Account_Details where Vehicle_Details.Registration_Number='{reg_no}' and Account_Details.Account_Number={acc_no[numb]}"
+    mycursor.execute(balanc)  # get balance
+    balanc = mycursor.fetchone()[0]
+    print("Balance : ", balanc)
+    if (balanc<faree):      # balance is low
         recharg, balanc = low_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
 
     else:  # customer has enough balance
@@ -170,7 +163,7 @@ def low_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
             input(f"Enter the recharge amount (Minimum amount : {faree-balanc}). "))
     balanc += recharg-faree
     transac_id(db,mycursor,acc_no,phone_no,reg_no)
-    update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}'"
+    update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}' and Account_Details.Account_Number={acc_no}"
     mycursor.execute(update_balanc)  # update the balance
     db.commit()
     print("Recharge successful..")
@@ -181,7 +174,7 @@ def low_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
 
 def enough_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
     balanc -= faree
-    update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}'"
+    update_balanc = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}' and Account_Details.Account_Number={acc_no}"
     mycursor.execute(update_balanc)  # update the balance
     db.commit()
     print("Tax deducted successfully..")
@@ -196,7 +189,7 @@ def enough_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
         if (recharg < 0):
             print("Invalid amount")
         balanc += recharg
-        new_balance = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}'"
+        new_balance = f"UPDATE Account_Details natural JOIN Transaction_Details SET Account_Details.balance = {balanc} WHERE Transaction_Details.Registration_Number = '{reg_no}' and Account_Details.Account_Number={acc_no}"
         mycursor.execute(new_balance)  # update the balance
         print("Recharge successful..")
         print("New balance : ", balanc)
