@@ -19,3 +19,7 @@ Download Inquirer
 ```console
 pip3 install inquirer
 ```
+Download Maskpass
+```console
+pip3 install maskpass
+```
