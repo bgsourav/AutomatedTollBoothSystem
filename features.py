@@ -113,6 +113,9 @@ def car_present(db, mycursor, reg_no):
     mycursor.execute(faree)  # get toll price
     faree = mycursor.fetchone()[0]
     print("Fare : ", faree)
+    ch2=input("Would you like to register another account?[Y/N] ")
+    if(ch2 in ['Y','y']):
+        register_account(db,mycursor,reg_no,faree)
     acc_no=f"Select distinct Account_Number,Phone_Number from Transaction_Details where Registration_Number='{reg_no}' group by Account_Number"
     mycursor.execute(acc_no)  # get account number and phone number
     arr1=mycursor.fetchall()
@@ -243,10 +246,21 @@ def car_notpresent(db, mycursor, reg_no):
         if cf == 2:
             print("\nThis is a government vehicle and is exempted from tax..\n")
             return
+        register_account(db,mycursor,reg_no,fare)
+        car_present(db, mycursor, reg_no)
+    except mysql.connector.Error as e:
+        print("\nError has Occured!!.. i.e : ",e)
+        db.rollback()
+        return
+    print("")
+
+def register_account(db,mycursor,reg_no,fare):
+    try:
         fname = input("Enter your First Name: ")
         lname = input("Enter your Last Name: ")
         accno = int(input("Enter your Account Number: "))
         bal = 0
+        cf=1
         while(cf == 1):
             bal = int(input("Enter the Balance in your account: "))
             if bal < fare:
@@ -259,17 +273,14 @@ def car_notpresent(db, mycursor, reg_no):
         ins2 = f"INSERT INTO Account_Details values (%s, %s, %s, %s);"
         st2 = (accno, fname, lname, bal)
         mycursor.execute(ins2, st2)
-        db.commit()
-        trid = input("Enter the Transaction Id: ")
+        trid = input("Enter the Transaction Id for recharge: ")
         phno = int(input("Enter your Phone Number: "))
         ins3 = f"INSERT INTO Transaction_Details values (%s, %s, %s, %s);"
         st3 = (trid, accno, phno, reg_no)
         mycursor.execute(ins3, st3)
         db.commit()
-        car_present(db, mycursor, reg_no)
     except mysql.connector.Error as e:
         print("\nError has Occured!!.. i.e : ",e)
         db.rollback()
         return
     print("")
-    return
