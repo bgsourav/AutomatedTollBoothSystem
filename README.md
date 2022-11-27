@@ -1,7 +1,9 @@
 # AutomatedTollBoothSystem
-## Dependencies
+### Use-Case Diagram
 ![Use-Case-Diagram](Support/UseCase.png)
+### ER-Diagram of the Database
 ![ERDiagram](Support/ERD.png)
+## Dependencies
 ### To mask the passwords at the time of input:
 Download maskpass package by running: 
 ```console
