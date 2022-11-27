@@ -1,9 +1,9 @@
 # AutomatedTollBoothSystem
 ## Dependencies
 ### For encrypting passwords at the time of input:
-Download bullet package by running: 
+Download maskpass package by running: 
 ```console
-pip3 install bullet
+pip install maskpass
 ```
 ### To show a Table format for data:
 Download prettytable package by running:
