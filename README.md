@@ -1,5 +1,7 @@
 # AutomatedTollBoothSystem
 ## Dependencies
+![Use-Case-Diagram](Support/UseCase.png)
+![ERDiagram](Support/ERD.png)
 ### To mask the passwords at the time of input:
 Download maskpass package by running: 
 ```console
