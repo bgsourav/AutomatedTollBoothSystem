@@ -35,8 +35,7 @@ def login():
 
 def create_staff(db,cursor,global_usercount):
     staff_name = input("Please enter the name of the Staff:")
-    cli = Password(prompt = "Enter the associated password for {} - >".format(staff_name),hidden="*")
-    staff_password = cli.launch()
+    staff_password = maskpass.askpass()
     try:
         cursor.execute(f"create user '{staff_name}'@'localhost' identified by '{staff_password}';")
     except mysql.connector.Error as e:
