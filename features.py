@@ -94,65 +94,75 @@ def car_entered(db, mycursor):
         car_notpresent(db,mycursor,reg_no)
 
 def car_present(db, mycursor, reg_no):
-    check_flg = f"Select check_flag from vehicle_details where Registration_Number = '{reg_no}'"
-    mycursor.execute(check_flg)
-    check_flg = mycursor.fetchone()[0]
-    if (check_flg != 1 and check_flg != 0):
-        print("This is a government vehicle and is exempted from tax..")
-        return
-    mycursor.execute(f"select COUNT(*) from Toll_Booth;")
-    tempo = mycursor.fetchone()[0]
-    toll_no = int(input(
-        (f"Please enter the toll booth number where the vehicle entered [less than {tempo}] ")))
-    while (toll_no > tempo):
-        print(
-            "Entered Toll Booth ID does not exist\n Please enter valid Toll Booth number : ")
+    try:
+        mycursor.execute(f"select COUNT(*) from Toll_Booth;")
+        tempo = mycursor.fetchone()[0]
         toll_no = int(input(
-            ("Please enter the toll booth number where the vehicle entered [less than 4] ")))
-    faree = f"select Toll_Price from Fare_Table natural join Vehicle_Details where Vehicle_Details.Registration_Number='{reg_no}'"
-    mycursor.execute(faree)  # get toll price
-    faree = mycursor.fetchone()[0]
-    print("Fare : ", faree)
-    ch2=input("Would you like to register another account?[Y/N] ")
-    if(ch2 in ['Y','y']):
-        register_account(db,mycursor,reg_no,faree)
-    acc_no=f"Select distinct Account_Number,Phone_Number from Transaction_Details where Registration_Number='{reg_no}' group by Account_Number"
-    mycursor.execute(acc_no)  # get account number and phone number
-    arr1=mycursor.fetchall()
-    acc_no=[i[0] for i in arr1]
-    phonm=[i[1] for i in arr1]
-    print("Account and Phone number available to recharge: \n")
-    print("Choice\t Account number\t Phone number")
-    for i in range(len(acc_no)):
-        print(f" {i+1}> \t {acc_no[i]} \t {phonm[i]}. \n")
-    numb=int(input("Enter your choice ?  "))
-    while (numb> len(phonm) or numb<1):
-        numb=int(input("Please Enter a valid choice: "))
-    numb-=1
-    print("Account number chosen: ",acc_no[numb])
-    print("Amount to be deducted : ", faree)
-    balanc = f"select distinct balance from Transaction_Details natural join Vehicle_Details natural join Account_Details where Vehicle_Details.Registration_Number='{reg_no}' and Account_Details.Account_Number={acc_no[numb]}"
-    mycursor.execute(balanc)  # get balance
-    balanc = mycursor.fetchone()[0]
-    print("Balance : ", balanc)
-    if (balanc<faree):      # balance is low
-        recharg, balanc = low_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
+            (f"Please enter the toll booth number where the vehicle entered [less than {tempo}] ")))
+        while (toll_no > tempo):
+            print(
+                "Entered Toll Booth ID does not exist\n Please enter valid Toll Booth number : ")
+            toll_no = int(input(
+                ("Please enter the toll booth number where the vehicle entered [less than 4] ")))
+        check_flg = f"Select check_flag from vehicle_details where Registration_Number = '{reg_no}'"
+        mycursor.execute(check_flg)
+        check_flg = mycursor.fetchone()[0]
+        if (check_flg != 1 and check_flg != 0):
+            print("This is a government vehicle and is exempted from tax..")
+            mycursor.execute(f"insert into access values ('{reg_no}',{toll_no}, CURRENT_TIMESTAMP()) ")
+            db.commit()
+            return
+        faree = f"select Toll_Price from Fare_Table natural join Vehicle_Details where Vehicle_Details.Registration_Number='{reg_no}'"
+        mycursor.execute(faree)  # get toll price
+        faree = mycursor.fetchone()[0]
+        print("Fare : ", faree)
+        ch2=input("Would you like to register another account?[Y/N] ")
+        while(ch2 in ['Y','y']):
+            ret=register_account(db,mycursor,reg_no,faree)
+            if(ret==0):
+                ch2=input("Would you like to register another account?[Y/N] ")
+            else:
+                break
+        acc_no=f"Select distinct Account_Number,Phone_Number from Transaction_Details where Registration_Number='{reg_no}' group by Account_Number"
+        mycursor.execute(acc_no)  # get account number and phone number
+        arr1=mycursor.fetchall()
+        acc_no=[i[0] for i in arr1]
+        phonm=[i[1] for i in arr1]
+        print("Account and Phone number available to recharge: \n")
+        print("Choice\t Account number\t Phone number")
+        for i in range(len(acc_no)):
+            print(f" {i+1}> \t {acc_no[i]} \t {phonm[i]}. \n")
+        numb=int(input("Enter your choice ?  "))
+        while (numb> len(phonm) or numb<1):
+            numb=int(input("Please Enter a valid choice: "))
+        numb-=1
+        print("Account number chosen: ",acc_no[numb])
+        print("Amount to be deducted : ", faree)
+        balanc = f"select distinct balance from Transaction_Details natural join Vehicle_Details natural join Account_Details where Vehicle_Details.Registration_Number='{reg_no}' and Account_Details.Account_Number={acc_no[numb]}"
+        mycursor.execute(balanc)  # get balance
+        balanc = mycursor.fetchone()[0]
+        print("Balance : ", balanc)
+        if (balanc<faree):      # balance is low
+            recharg, balanc = low_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
 
-    else:  # customer has enough balance
-        recharg, balanc = enough_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
+        else:  # customer has enough balance
+            recharg, balanc = enough_balance(db, mycursor, faree, balanc, reg_no,acc_no[numb],phonm[numb])
 
-    update_chkbit(db,mycursor,balanc,faree,reg_no)
-    
-    str5 = f"Select toll_revenue from Toll_Booth where Toll_Booth_No={toll_no}"
-    mycursor.execute(str5)
-    toll_revn = mycursor.fetchone()[0]
-    toll_revn += faree
-    str6 = f"update Toll_Booth set Toll_Revenue={toll_revn} where Toll_Booth_No = {toll_no}"
-    mycursor.execute(str6)
-    db.commit()
-    print("Toll Booth Revenue updated.")
-    print(f"Total revenue collected for {toll_no} toll booth: {toll_revn}")
-    return
+        update_chkbit(db,mycursor,balanc,faree,reg_no)
+        
+        str5 = f"Select toll_revenue from Toll_Booth where Toll_Booth_No={toll_no}"
+        mycursor.execute(str5)
+        toll_revn = mycursor.fetchone()[0]
+        toll_revn += faree
+        str6 = f"update Toll_Booth set Toll_Revenue={toll_revn} where Toll_Booth_No = {toll_no}"
+        mycursor.execute(str6)
+        mycursor.execute(f"insert into access values ('{reg_no}',{toll_no}, CURRENT_TIMESTAMP()) ")
+        db.commit()
+        print("Toll Booth Revenue updated.")
+        print(f"Total revenue collected for {toll_no} toll booth: {toll_revn}")
+        return
+    except mysql.connector.Error as e:
+        print("\nError has Occured!!.. i.e : ",e
 
 def low_balance(db, mycursor, faree, balanc, reg_no,acc_no,phone_no):
     print("Your account balance is low..")
@@ -254,6 +264,7 @@ def car_notpresent(db, mycursor, reg_no):
         return
     print("")
 
+
 def register_account(db,mycursor,reg_no,fare):
     try:
         fname = input("Enter your First Name: ")
@@ -264,8 +275,8 @@ def register_account(db,mycursor,reg_no,fare):
         while(cf == 1):
             bal = int(input("Enter the Balance in your account: "))
             if bal < fare:
-                cf = 0
-                print("\nNot sufficient balance!!\n")
+                # cf = 0
+                print("\nNot sufficient balance!!\nTry again..\n")
             else:
                 #bal = bal - fare
                 #cf = 1
@@ -279,8 +290,9 @@ def register_account(db,mycursor,reg_no,fare):
         st3 = (trid, accno, phno, reg_no)
         mycursor.execute(ins3, st3)
         db.commit()
+        print("Successfully recharged..")
+        return 1
     except mysql.connector.Error as e:
         print("\nError has Occured!!.. i.e : ",e)
         db.rollback()
-        return
-    print("")
+        return 0
