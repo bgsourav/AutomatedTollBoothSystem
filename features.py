@@ -222,7 +222,9 @@ def update_chkbit(db,mycursor,balanc,faree,reg_no):
 
 def car_notpresent(db, mycursor, reg_no):
     print("Enter the Check flag i.e. the designation of the Vehicle: \n")
-    cf = int(input("Type \n 2 - Government Vehicle \n 1 - Not a Government Vehicle :- \n")) 
+    cf = int(input("Type \n 2 - Government Vehicle \n 1 - Not a Government Vehicle :- \n"))
+    if cf < 1 or cf > 2:
+        print("\nPlease Enter the correct option..\n")
     #print("Check flag = ",cf,"\n")
     print("Enter the type of the Vehicle: \n")
     while(1):
