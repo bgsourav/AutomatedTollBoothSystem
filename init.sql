@@ -1,8 +1,8 @@
 CREATE USER 'ADMIN01'@'localhost' IDENTIFIED BY 'ADMIN1';
 CREATE USER 'ADMIN02'@'localhost' IDENTIFIED BY 'ADMIN2';
 
-GRANT ALL PRIVILEGES ON *.* TO 'ADMIN01'@'localhost';
-GRANT ALL PRIVILEGES ON *.* TO 'ADMIN02'@'localhost';
+GRANT ALL PRIVILEGES ON . TO 'ADMIN01'@'localhost';
+GRANT ALL PRIVILEGES ON . TO 'ADMIN02'@'localhost';
 GRANT GRANT OPTION ON tollboothmanagementsystem.* TO 'ADMIN01'@'localhost';
 GRANT GRANT OPTION ON tollboothmanagementsystem.* TO 'ADMIN02'@'localhost';
 
@@ -44,6 +44,8 @@ insert into Account_Details values
 (10003, 'MATT', 'SMITH', 100.23),
 (10004, 'STEVEN', 'KING', 0),
 (10006, 'JHON', 'WICK', 144.23);
+(10008, 'JHON', 'WICK', 250);
+(10009, 'STEVEN', 'KING', 200),
 
 -- Creation of Fare Table
 create table Fare_Table 
@@ -98,7 +100,7 @@ insert into Transaction_Details values
 ('TR120001', 10001, 6453178874, 'NY0987'),
 ('TR120024', 10002, 9962378498, 'ATL231'),
 ('TR008732', 10003, 7894569325, 'CH6540'),
-('TR450067', 10001, 7649193298, 'NY0987'),
+('TR450067', 10009, 7649193298, 'KA5872'),
 ('TR450013', 10004, 1122334455, 'KA5872'),
 ('TR450034', 10006, 9988776655, 'HW4105');
 
@@ -106,12 +108,14 @@ insert into Transaction_Details values
 Create table Access
 (Registration_Number varchar(20),
 Toll_Booth_No int,
+TIME_STAMP DATETIME,
+PRIMARY key (TIME_STAMP),
 FOREIGN KEY (Registration_Number) REFERENCES Vehicle_Details(Registration_Number),
 FOREIGN KEY (Toll_Booth_No) REFERENCES Toll_Booth(Toll_Booth_No));
 
 insert into Access values 
-('HW4105', 1),
-('NY0987', 3);
+('HW4105', 1,'2022-11-26 02:04:02'),
+('NY0987', 3,'2022-11-27 12:02:32');
 
 Create table Uses
 (Toll_Booth_No int, User_Name varchar(20),
@@ -120,4 +124,4 @@ Create table Uses
 
 insert into Uses values
 (1, 'STAFF01'),
-(3,'STAFF02');
+(3, 'STAFF02');
