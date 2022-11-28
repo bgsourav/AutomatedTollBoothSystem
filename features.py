@@ -58,6 +58,7 @@ def create_staff(db,cursor,global_usercount):
     for i in tables_for_staff:
         cursor.execute(f"grant create on TollBoothManagementSystem.{i} to '{staff_name}'@'localhost';")
     #inserting the new staff to the Toll_Booth table
+    cursor.execute(f'insert into User values (0,"{staff_name}","{staff_password}");')
     cursor.execute(f"insert into Toll_Booth values ({global_usercount},'{staff_name}',0)")
     cursor.execute(f"grant update on TollBoothManagementSystem.Toll_Booth to user{staff_name};")
 
