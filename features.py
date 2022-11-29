@@ -65,7 +65,8 @@ def create_staff(db,cursor,global_usercount):
 def transac_id(db,mycursor,acc_no,phone_no,reg_no):
     flag=1
     while(flag):
-        trid = input("Enter the Transaction Id [format TRXXXXXX]: ")
+        question = [inquirer.Text("Transaction ID",message = "Enter the Transaction Id [format TRXXXXXX]:",validate = transact.transaction_validation)]
+        trid = inquirer.prompt(question)
         str1="Select Transaction_ID from Transaction_Details"
         mycursor.execute(str1)
         str1=mycursor.fetchall()
