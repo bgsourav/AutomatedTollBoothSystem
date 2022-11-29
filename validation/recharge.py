@@ -8,7 +8,7 @@ def recharge_validation(answers, current):
     return True
 
 questions = [
-    inquirer.Text("Recharge",message="Enter recharge",validate=recharge_validation)
+    inquirer.Text("Recharge",message="Enter recharge amount",validate=recharge_validation)
 ]
 answers = inquirer.prompt(questions)
 pprint(answers)
