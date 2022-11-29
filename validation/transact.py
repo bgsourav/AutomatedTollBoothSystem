@@ -5,7 +5,7 @@ import inquirer
 
 print('Transaction ID must TR followed by three correct numbers')
 def transaction_validation(answers, current):
-    if not re.match("[TR[0-9]{6}$",current):
+    if not re.match("TR[0-9]{6}$",current):
         raise inquirer.errors.ValidationError("", reason="Invalid transaction ID input!")
     return True
 
