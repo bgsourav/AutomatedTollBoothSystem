@@ -287,7 +287,7 @@ def register_account(db,mycursor,reg_no,fare):
         trid = input("Enter the Transaction Id for recharge: ")
         phno = int(input("Enter your Phone Number: "))
         ins3 = f"INSERT INTO Transaction_Details values (%s, %s, %s, %s);"
-        st3 = (trid, accno, phno, reg_no)
+        st3 = (trid, accno, pho, reg_no)
         mycursor.execute(ins3, st3)
         db.commit()
         print("Successfully recharged..")
@@ -296,3 +296,63 @@ def register_account(db,mycursor,reg_no,fare):
         print("\nError has Occured!!.. i.e : ",e)
         db.rollback()
         return 0
+                            
+def convTup(tup):
+    str1 = ''.join(map(str, tup))
+    return str1
+
+def astr(str1):
+    n = 0
+    for i in str1:
+        n = n+1
+        if i == "'":
+            return n
+
+def bstr(str1):
+    n = astr(str1)
+    return str1[n:len(str1)-2]
+
+def prnt_user(mycursor):
+    mycursor.execute(f"SELECT User_Name FROM User WHERE User_Type=0;")
+    usrname = mycursor.fetchall()
+    print(usrname)
+
+def del_user(db, mycursor, userName):
+    try:
+        delUser = f"DROP USER '%s'@'localhost';"%userName
+        mycursor.execute(delUser)
+        usrdel = f"DELETE FROM User WHERE User_Name = '{userName}';"
+        mycursor.execute(usrdel)
+        db.commit()
+    except mysql.connector.Error as e:
+        print("Error: ",e)
+
+def drop_user(db, mycursor):
+    print("\nList of Users: \n")
+    mycursor.execute(f"SELECT user FROM mysql.user;")
+    users = mycursor.fetchall()
+    list1 = []
+    for username in users:
+        UserName = convTup(username)
+        userName = bstr(UserName)
+        list1.append(userName)
+    #print(list1,"\n")
+    prnt_user(mycursor)
+    print("\n")
+    while(1):
+        usn = input("Enter the User Name to Delete: ")
+        if usn not in list1:
+            print("\nEnter Correct User!!..")
+        else:
+            break
+    print(f"\nSelected: '%s'@'localhost'\n"%usn)
+    fl = input("Do you want to Delete ?.. (Y/N)  ")
+    if fl == 'Y' or fl == 'y':
+        del_user(db, mycursor, usn)
+        print("\nDeleted..\n")
+        prnt_user(mycursor)
+    elif fl == 'N' or fl == 'n':
+        print("\nThanks")
+        exit(0)
+    else:
+        print("Error")
