@@ -3,7 +3,7 @@ from pprint import pprint
 import inquirer  
 
 def name_validation(answers, current):
-    if not re.match("^[A-Z][a-z]+\s[A-Z][a-z]+$",current):
+    if not re.match("^[A-Z][a-z]$",current):
         raise inquirer.errors.ValidationError("", reason="Check for invalid numeric or special character inputs!")
     return True
 
